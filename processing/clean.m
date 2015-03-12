@@ -1,21 +1,27 @@
+%% This code cleans teh data with manual parameters
 
+% File goes there
 EIT_fname='CR_EIT017_T_EIT_85uA_6kHz_20s_200ms_Prt1_ref1_NMBA_bw4.mat'
 load(EIT_fname);
-%%
 
+% Params
+STDF = 10; % noise in microvolts
+
+% maps of the array
  map_p=[[ 3 4 7 8 9 12 13 14 15 16 19 21 22 23 26 27 28]-1]; % Montage
    map_=[ 3 4 7 8 9 12 13 14 15 16 19 21 22 23 26 27 28]; 
     ring = [7 28	12	23	21	16	26	9	13	4	3	15	8	27	14	22];
 
+%Protocol name    
 Prt_name='Prt_1.txt';
 Prt_size=15;
 
-
-
-
+% init
 dZ=[];
 Prt_0=[];
 n=1;
+
+%clean
 for iPair=1:Prt_size
     
     for i = [1:10,12:size(EIT{iPair}.dZ,2)] 
@@ -24,7 +30,7 @@ for iPair=1:Prt_size
         
         if ma<200 && ...
                 mt>0 && ...
-                std(EIT{iPair}.dZ_avg(4500:5050,i)) <10
+                std(EIT{iPair}.dZ_avg(4500:5050,i)) <STDF;
             
             dZ(:,n)=EIT{iPair}.dZ_avg(:,i);
            
@@ -35,9 +41,11 @@ for iPair=1:Prt_size
         end
     end
 end
-    
-     plot(dZ);
-    
+
+% Check if you are happy
+plot(dZ);
+
+ % Save    
  save(['for_image_' EIT_fname(1:15) '.mat'],'dZ','Prt_0','-v7.3');
     
    
